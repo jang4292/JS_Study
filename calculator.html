@@ -23,14 +23,8 @@
         table {
             width: 100%;
             height: 80%;
-            background-color: #bfbfbf;
             border-collapse: collapse;
             table-layout: fixed;
-        }
-
-        header {
-            width: 100%;
-            height: 20%;
         }
 
         input {
@@ -40,10 +34,16 @@
             margin: 0;
             border: 0px;
             background-color: lightgray;
+            font-size: 40px
+        }
+
+        tbody {
+            background-color: black;
         }
 
         td {
-            font-size: 30px;
+            background-color: lightgray;
+            font-size: 25px;
             text-align: center;
             font-weight: normal;
             cursor: pointer;
@@ -51,6 +51,8 @@
 
         td:hover {
             font-weight: bold;
+            transform: scale(0.9);
+            font-size: 45px;
         }
 
         td.right {
@@ -62,40 +64,63 @@
         }
 
     </style>
+    <script tyep='text/javascript'>
+        window.addEventListener('keydown', function (event) {
+            if (event.defaultPrevented) {
+                return;
+            }
+
+            var keyValue = event.key;
+            if (keyValue >= 0 && keyValue <= 9) {
+                var display = document.getElementById('inputDisplay');
+
+                var value = parseInt(display.value);
+                if (value === 0) {
+                    display.value = keyValue;
+                } else {
+                    display.value += keyValue;
+                }
+            }
+        });
+    </script>
 </head>
 
 <body>
     <table>
-        <input>
-        <tr>
-            <td class='top'>C</td>
-            <td class='top'>+/-</td>
-            <td class='top'>%</td>
-            <td class='right'>&divide;</td>
-        </tr>
-        <tr>
-            <td>7</td>
-            <td>8</td>
-            <td>9</td>
-            <td class='right'>&times;</td>
-        </tr>
-        <tr>
-            <td>4</td>
-            <td>5</td>
-            <td>6</td>
-            <td class='right'>-</td>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td class='right'>+</td>
-        </tr>
-        <tr>
-            <td colspan="2">0</td>
-            <td>.</td>
-            <td class='right'>=</td>
-        </tr>
+        <thead>
+            <input id='inputDisplay' value="0" readonly>
+        </thead>
+        <tbody>
+            <tr>
+                <td class='top'>C</td>
+                <td class='top'>+/-</td>
+                <td class='top'>%</td>
+                <td class='right'>&divide;</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>8</td>
+                <td>9</td>
+                <td class='right'>&times;</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>5</td>
+                <td>6</td>
+                <td class='right'>-</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td class='right'>+</td>
+            </tr>
+            <tr>
+                <td colspan="2">0</td>
+                <td>.</td>
+                <td class='right'>=</td>
+            </tr>
+        </tbody>
     </table>
 </body>
 
