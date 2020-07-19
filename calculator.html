@@ -34,7 +34,8 @@
             margin: 0;
             border: 0px;
             background-color: lightgray;
-            font-size: 40px
+            font-size: 40px;
+            text-align: right;
         }
 
         tbody {
@@ -62,27 +63,7 @@
         td.top {
             background-color: lightslategray;
         }
-
     </style>
-    <script tyep='text/javascript'>
-        window.addEventListener('keydown', function (event) {
-            if (event.defaultPrevented) {
-                return;
-            }
-
-            var keyValue = event.key;
-            if (keyValue >= 0 && keyValue <= 9) {
-                var display = document.getElementById('inputDisplay');
-
-                var value = parseInt(display.value);
-                if (value === 0) {
-                    display.value = keyValue;
-                } else {
-                    display.value += keyValue;
-                }
-            }
-        });
-    </script>
 </head>
 
 <body>
@@ -123,5 +104,62 @@
         </tbody>
     </table>
 </body>
+<script tyep='text/javascript'>
+    window.addEventListener('keydown', function (event) {
+        if (event.defaultPrevented) {
+            return;
+        }
+
+        var keyValue = event.key;
+        if (keyValue >= 0 && keyValue <= 9 ||
+            keyValue === '.' || event.keyCode === 110) {
+            display.update(keyValue);
+        } else if (keyValue === 'Delete' || event.keyCode === 46) {
+            display.reset();
+        } else if (keyValue === 'Backspace' || event.keyCode === 8) {
+            display.backspace();
+        } else {
+            console.log(' keyValue : ' + keyValue + ' keyCode : ' + event.keyCode);
+        }
+    });
+
+    var input = document.getElementById('inputDisplay');
+    var display = function (dom) {
+        var input = dom;
+        var prevValue = 0;
+
+        return {
+            update: function (value) {
+                if (input.value.length < 14) {
+                    if (prevValue === 0) {
+                        prevValue = value;
+                        if (prevValue === '.') {
+                            prevValue = 0
+                        }
+                    } else {
+                        prevValue += value;
+                    }
+                    update(prevValue);
+                }
+            },
+            backspace: function () {
+                prevValue = prevValue.slice(0, -1);
+                update(prevValue);
+            },
+            reset: function () {
+                prevValue = 0
+                update(prevValue);
+            }
+        }
+
+        function update(value) {
+            isReset = false;
+            input.value = function (value) {
+                return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }(value);
+        }
+    }(input);
+    
+</script>
 
 </html>
