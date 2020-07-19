@@ -153,10 +153,7 @@
         }
 
         function update(value) {
-            isReset = false;
-            input.value = function (value) {
-                return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            }(value);
+            input.value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
     }(input);
     
