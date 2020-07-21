@@ -38,31 +38,19 @@
             text-align: right;
         }
 
-        tbody {
-            background-color: black;
-        }
-
-        td {
-            background-color: lightgray;
+        button {
+            width: 100%;
+            height: 100%;
             font-size: 25px;
             text-align: center;
             font-weight: normal;
             cursor: pointer;
         }
 
-        td:hover {
-            font-weight: bold;
-            transform: scale(0.9);
-            font-size: 45px;
+        tbody {
+            background-color: black;
         }
 
-        td.right {
-            background-color: orange;
-        }
-
-        td.top {
-            background-color: lightslategray;
-        }
     </style>
 </head>
 
@@ -73,33 +61,34 @@
         </thead>
         <tbody>
             <tr>
-                <td class='top'>C</td>
-                <td class='top'>+/-</td>
-                <td class='top'>%</td>
-                <td class='right'>&divide;</td>
+                <td><button type='button'>C</button></td>
+                <td><button type='button'>+/-</button></td>
+                <td><button type='button'>%</button></td>
+                <td><button type='button'>DEL</button></td>
             </tr>
             <tr>
-                <td>7</td>
-                <td>8</td>
-                <td>9</td>
-                <td class='right'>&times;</td>
+                <td><button type='button'>7</button></td>
+                <td><button type='button'>8</button></td>
+                <td><button type='button'>9</button></td>
+                <td><button type='button'>&divide;</button></td>
             </tr>
             <tr>
-                <td>4</td>
-                <td>5</td>
-                <td>6</td>
-                <td class='right'>-</td>
+                <td><button type='button'>4</button></td>
+                <td><button type='button'>5</button></td>
+                <td><button type='button'>6</button></td>
+                <td><button type='button'>&times;</button></td>
             </tr>
             <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-                <td class='right'>+</td>
+                <td><button type='button'>1</button></td>
+                <td><button type='button'>2</button></td>
+                <td><button type='button'>3</button></td>
+                <td><button type='button'>-</button></td>
             </tr>
             <tr>
-                <td colspan="2">0</td>
-                <td>.</td>
-                <td class='right'>=</td>
+                <td><button type='button'>0</button></td>
+                <td><button type='button'>.</button></td>
+                <td><button type='button'>=</button></td>
+                <td class='right'><button type='button'>+</button></td>
             </tr>
         </tbody>
     </table>
@@ -110,7 +99,7 @@
             return;
         }
 
-        var keyValue = event.key;
+        let keyValue = event.key;
         if (keyValue >= 0 && keyValue <= 9 ||
             keyValue === '.' || event.keyCode === 110) {
             display.update(keyValue);
@@ -118,45 +107,80 @@
             display.reset();
         } else if (keyValue === 'Backspace' || event.keyCode === 8) {
             display.backspace();
-        } else {
-            console.log(' keyValue : ' + keyValue + ' keyCode : ' + event.keyCode);
         }
     });
 
-    var input = document.getElementById('inputDisplay');
-    var display = function (dom) {
-        var input = dom;
-        var prevValue = 0;
+    const input = document.getElementById('inputDisplay');
+    const buttons = document.getElementsByTagName('button');
+    for (const key in buttons) {
+        if (buttons.hasOwnProperty(key)) {
+            const element = buttons[key];
+            if (element.tagName === 'BUTTON') {
+                element.addEventListener('click', event => {
+                    const keyValue = event.target.innerText;
+                    if (keyValue >= 0 && keyValue <= 9 ||
+                        keyValue === '.' || event.keyCode === 110) {
+                        display.update(keyValue);
+                    } else if (keyValue === 'Delete' || event.keyCode === 46 || keyValue === 'C') {
+                        display.reset();
+                    } else if (keyValue === 'Backspace' || event.keyCode === 8 || keyValue === 'DEL') {
+                        display.backspace();
+                    }
+                });
+            }
+        }
+    }
+
+    const display = function (dom) {
+        const input = dom;
+        let prevValue = 0;
 
         return {
             update: function (value) {
                 if (input.value.length < 14) {
                     if (prevValue === 0) {
-                        prevValue = value;
-                        if (prevValue === '.') {
+                        if (value === '.') {
                             prevValue = 0
+                        } else {
+                            prevValue = parseInt(value);
                         }
                     } else {
-                        prevValue += value;
+                        if (value === '.') {
+                            if (prevValue.indexOf('.') < 0) {
+                                prevValue += value;
+                            }
+                        } else {
+                            prevValue += value;
+                        }
                     }
                     update(prevValue);
                 }
             },
             backspace: function () {
                 prevValue = prevValue.slice(0, -1);
+                if (prevValue.slice(-1) === '.') {
+                    prevValue = prevValue.slice(0, -1);
+                }
                 update(prevValue);
             },
             reset: function () {
-                prevValue = 0
+                prevValue = 0;
                 update(prevValue);
             }
         }
 
         function update(value) {
-            input.value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            if (!isNaN(value)) {
+                value = '' + value;
+            }
+            let tempValue = value.split('.');
+            input.value = tempValue[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            if (tempValue[1]) {
+                input.value += ('.' + tempValue[1]);
+            }
         }
     }(input);
-    
+
 </script>
 
 </html>
