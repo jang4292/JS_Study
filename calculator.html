@@ -100,13 +100,28 @@
         }
 
         let keyValue = event.key;
-        if (keyValue >= 0 && keyValue <= 9 ||
-            keyValue === '.' || event.keyCode === 110) {
+        if (keyValue === ' ' || event.keycode === 32) {
+            return;
+        }
+
+        if ((keyValue >= 0 && keyValue <= 9) || keyValue === '.' || event.keyCode === 110) {
             display.update(keyValue);
         } else if (keyValue === 'Delete' || event.keyCode === 46) {
             display.reset();
         } else if (keyValue === 'Backspace' || event.keyCode === 8) {
             display.backspace();
+        } else if (keyValue === '%' || event.keyCode === 53) {
+            display.savePrevValue(keyValue);
+        } else if (keyValue === '÷' || keyValue === '/' || event.keyCode === 111) {
+            display.savePrevValue(keyValue);
+        } else if (keyValue === '×' || keyValue === '*' || event.keyCode === 106) {
+            display.savePrevValue(keyValue);
+        } else if (keyValue === '-' || event.keyCode === 109) {
+            display.savePrevValue(keyValue);
+        } else if (keyValue === '+' || event.keyCode === 107) {
+            display.savePrevValue(keyValue);
+        } else if (keyValue === 'Enter' || keyValue === '=' || event.keyCode === 13) {
+            display.showResult();
         }
     });
 
@@ -125,7 +140,22 @@
                         display.reset();
                     } else if (keyValue === 'Backspace' || event.keyCode === 8 || keyValue === 'DEL') {
                         display.backspace();
+                    } else if (keyValue === '+/-') {
+                        display.update('-');
+                    } else if (keyValue === '%') {
+                        display.savePrevValue(keyValue);
+                    } else if (keyValue === '÷' || keyValue === '/' || event.keyCode === 111) {
+                        display.savePrevValue(keyValue);
+                    } else if (keyValue === '×' || keyValue === '*' || event.keyCode === 106) {
+                        display.savePrevValue(keyValue);
+                    } else if (keyValue === '-' || event.keyCode === 109) {
+                        display.savePrevValue(keyValue);
+                    } else if (keyValue === '+' || event.keyCode === 107) {
+                        display.savePrevValue(keyValue);
+                    } else if (keyValue === 'Enter' || keyValue === '=' || event.keyCode === 13) {
+                        display.showResult();
                     }
+
                 });
             }
         }
@@ -134,10 +164,55 @@
     const display = function (dom) {
         const input = dom;
         let prevValue = 0;
+        let savedValue = 0;
+        let functionKey;
 
         return {
+            showResult: function () {
+                switch (functionKey) {
+                    case '%': {
+                        savedValue = parseFloat(savedValue) % parseFloat(prevValue);
+                        break;
+                    }
+                    case '÷': {
+                        if (prevValue === 0) {
+                            return;
+                        }
+                        savedValue = parseFloat(savedValue) / parseFloat(prevValue);
+                        break;
+                    }
+                    case '×': {
+                        savedValue = parseFloat(savedValue) * parseFloat(prevValue);
+                        break;
+                    }
+                    case '-': {
+                        savedValue = parseFloat(savedValue) - parseFloat(prevValue);
+                        break;
+                    }
+                    case '+': {
+                        savedValue = parseFloat(savedValue) + parseFloat(prevValue);
+                        break;
+                    }
+                }
+                update(savedValue);
+            },
+            savePrevValue: function (value) {
+                if (functionKey === undefined || functionKey === null) {
+                    functionKey = value;
+                    savedValue = prevValue;
+                    prevValue = 0;
+                    update(0);
+                } else {
+                    functionKey = value;
+                    prevValue = 0;
+                    update(0);
+                }
+            },
             update: function (value) {
-                if (input.value.length < 14) {
+                if (value === '-') {
+                    prevValue = -prevValue;
+                    update(prevValue);
+                } else if (input.value.length < 14) {
                     if (prevValue === 0) {
                         if (value === '.') {
                             prevValue = 0
